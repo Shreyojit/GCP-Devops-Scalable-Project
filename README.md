@@ -22,6 +22,7 @@ A fully automated pipeline to deploy a Kubernetes cluster on Google Cloud Platfo
 📦 Kubernetes Deployment: Containerized applications managed effortlessly with GKE.
 
 💡 Why It’s Awesome
+
 🛡️ Security First: OIDC authentication ensures no long-lived credentials are stored.
 
 ⏩ Speed & Efficiency: Automated pipelines reduce manual errors and deployment time.
@@ -31,6 +32,7 @@ A fully automated pipeline to deploy a Kubernetes cluster on Google Cloud Platfo
 🔄 Reproducibility: Terraform ensures the same infrastructure can be deployed across environments.
 
 🔗 Tech Stack
+
 Cloud: GCP (GKE, Compute Engine, Cloud Storage)
 
 IaC: Terraform
@@ -42,6 +44,7 @@ Orchestration: Kubernetes
 Authentication: GitHub OIDC + GCP Workload Identity Federation
 
 🌈 The Future
+
 📊 Monitoring: Integrate Prometheus and Grafana for real-time insights.
 
 🔄 Multi-Environment Support: Staging, production, and rollback strategies.
