@@ -82,246 +82,207 @@ Deploy the Application
 
 Clean Up Resources
 
-1. Create a Simple Node.js/Express Application
-Create a simple Node.js application using Express. Below is an example app.js file:
+<p>
+<img src="https://raw.githubusercontent.com/tush-tr/tush-tr/master/res/docker.gif" height="36" width="36" >
+<img src="https://raw.githubusercontent.com/tush-tr/tush-tr/master/res/kubernetes.svg.png"  height="36" width="36" ><img src="https://raw.githubusercontent.com/tush-tr/tush-tr/master/res/social-icon-google-cloud-1200-630.png" height="36" ><img src="https://raw.githubusercontent.com/itsksaurabh/itsksaurabh/master/assets/terraform.gif" height="36" ></p>
 
-javascript
-Copy
-const express = require('express');
-const app = express();
-const port = 80;
-
-app.get('/', (req, res) => {
-  res.send('Hello World!');
-});
-
-app.listen(port, () => {
-  console.log(`App listening at http://localhost:${port}`);
-});
-2. Write Dockerfile for the Application
-Create a Dockerfile to containerize the Node.js application:
-
-dockerfile
-Copy
-FROM --platform=linux/amd64 node:14
-WORKDIR /usr/app
-COPY package.json .
-RUN npm install
-COPY . .
-EXPOSE 80
-CMD ["node", "app.js"]
-3. Write Terraform Scripts for GKE Cluster, Deployment, and Service
-providers.tf
-Configure the Google and Kubernetes providers:
-
-hcl
-Copy
-terraform {
-  required_version = ">= 0.12"
-  backend "gcs" {}
-}
-
-provider "google" {
-  project = var.project_id
-  region  = var.region
-}
-
-provider "kubernetes" {
-  host  = google_container_cluster.default.endpoint
-  token = data.google_client_config.current.access_token
-  client_certificate = base64decode(
-    google_container_cluster.default.master_auth[0].client_certificate,
-  )
-  client_key = base64decode(google_container_cluster.default.master_auth[0].client_key)
-  cluster_ca_certificate = base64decode(
-    google_container_cluster.default.master_auth[0].cluster_ca_certificate,
-  )
-}
-main.tf
-Create a GKE cluster:
-
-hcl
-Copy
-data "google_container_engine_versions" "default" {
-  location = "us-central1-c"
-}
-
-data "google_client_config" "current" {}
-
-resource "google_container_cluster" "default" {
-  name               = "my-first-cluster"
-  location           = "us-central1-c"
-  initial_node_count = 3
-  min_master_version = data.google_container_engine_versions.default.latest_master_version
-
-  node_config {
-    machine_type = "g1-small"
-    disk_size_gb = 32
-  }
-
-  provisioner "local-exec" {
-    when    = destroy
-    command = "sleep 90"
-  }
-}
-k8s.tf
-Deploy the application to Kubernetes:
-
-hcl
-Copy
-resource "kubernetes_deployment" "name" {
-  metadata {
-    name = "nodeappdeployment"
-    labels = {
-      "type" = "backend"
-      "app"  = "nodeapp"
-    }
-  }
-  spec {
-    replicas = 1
-    selector {
-      match_labels = {
-        "type" = "backend"
-        "app"  = "nodeapp"
+# Steps
+- [x] Create a simple nodejs/express application.
+- [x] Write Dockerfile for the application
+    ```Dockerfile
+    FROM --platform=linux/amd64 node:14
+    WORKDIR /usr/app
+    COPY package.json .
+    RUN npm install
+    COPY . .
+    EXPOSE 80
+    CMD ["node","app.js"]
+    ```
+- [x] Write Terraform scripts for GKE Cluster, Deployment and service.
+  - ```providers.tf```: use google and kubernetes providers
+    ```sh
+    terraform {
+      required_version = ">= 0.12"
+      backend "gcs" {
       }
     }
-    template {
+    provider "google" {
+      project = var.project_id
+      region  = var.region
+    }
+    provider "kubernetes" {
+      host  = google_container_cluster.default.endpoint
+      token = data.google_client_config.current.access_token
+      client_certificate = base64decode(
+        google_container_cluster.default.master_auth[0].client_certificate,
+      )
+      client_key = base64decode(google_container_cluster.default.master_auth[0].client_key)
+      cluster_ca_certificate = base64decode(
+        google_container_cluster.default.master_auth[0].cluster_ca_certificate,
+      )
+    }
+    ```
+  - ```main.tf```: for creating GKE Cluster
+    ```sh
+    data "google_container_engine_versions" "default" {
+      location = "us-central1-c"
+    }
+    data "google_client_config" "current" {
+    }
+
+    resource "google_container_cluster" "default" {
+      name               = "my-first-cluster"
+      location           = "us-central1-c"
+      initial_node_count = 3
+      min_master_version = data.google_container_engine_versions.default.latest_master_version
+
+      node_config {
+        machine_type = "g1-small"
+        disk_size_gb = 32
+      }
+
+      provisioner "local-exec" {
+        when    = destroy
+        command = "sleep 90"
+      }
+    }
+    ```
+  - ```k8s.tf```: For deployment and service deployment on K8s
+    ```sh
+    resource "kubernetes_deployment" "name" {
       metadata {
-        name = "nodeapppod"
+        name = "nodeappdeployment"
         labels = {
           "type" = "backend"
           "app"  = "nodeapp"
         }
       }
       spec {
-        container {
-          name  = "nodecontainer"
-          image = var.container_image
-          port {
-            container_port = 80
+        replicas = 1
+        selector {
+          match_labels = {
+            "type" = "backend"
+            "app"  = "nodeapp"
+          }
+        }
+        template {
+          metadata {
+            name = "nodeapppod"
+            labels = {
+              "type" = "backend"
+              "app"  = "nodeapp"
+            }
+          }
+          spec {
+            container {
+              name  = "nodecontainer"
+              image = var.container_image
+              port {
+                container_port = 80
+              }
+            }
           }
         }
       }
     }
-  }
-}
-
-resource "google_compute_address" "default" {
-  name   = "ipforservice"
-  region = var.region
-}
-
-resource "kubernetes_service" "appservice" {
-  metadata {
-    name = "nodeapp-lb-service"
-  }
-  spec {
-    type             = "LoadBalancer"
-    load_balancer_ip = google_compute_address.default.address
-    port {
-      port        = 80
-      target_port = 80
+    resource "google_compute_address" "default" {
+      name   = "ipforservice"
+      region = var.region
     }
-    selector = {
-      "type" = "backend"
-      "app"  = "nodeapp"
+    resource "kubernetes_service" "appservice" {
+      metadata {
+        name = "nodeapp-lb-service"
+      }
+      spec {
+        type             = "LoadBalancer"
+        load_balancer_ip = google_compute_address.default.address
+        port {
+          port        = 80
+          target_port = 80
+        }
+        selector = {
+          "type" = "backend"
+          "app"  = "nodeapp"
+        }
+      }
     }
-  }
-}
-variables.tf
-Define input variables:
+    ```
+  - ```variables.tf```
+    ```sh
+    variable "region" {
+    }
+    variable "project_id" {
+    }
+    variable "container_image" {
+    }
+    ```
+  - ```outputs.tf```
+    ```sh
+    output "cluster_name" {
+      value = google_container_cluster.default.name
+    }
+    output "cluster_endpoint" {
+      value = google_container_cluster.default.endpoint
+    }
+    output "cluster_location" {
+      value = google_container_cluster.default.location
+    }
+    output "load-balancer-ip" {
+      value = google_compute_address.default.address
+    }
+    ```
+- [x] Setup Github OIDC Authentication with GCP
+  - Create a new workload Identity pool
+    ```sh
+    gcloud iam workload-identity-pools create "k8s-pool" \
+    --project="${PROJECT_ID}" \
+    --location="global" \
+    --display-name="k8s Pool"
+    ```
+  - Create a oidc identity provider for authenticating with Github
+    ```sh
+    gcloud iam workload-identity-pools providers create-oidc "k8s-provider" \
+    --project="${PROJECT_ID}" \
+    --location="global" \
+    --workload-identity-pool="k8s-pool" \
+    --display-name="k8s provider" \
+    --attribute-mapping="google.subject=assertion.sub,attribute.actor=assertion.actor,attribute.aud=assertion.aud" \
+    --issuer-uri="https://token.actions.githubusercontent.com"
+    ```
+  - Create a service account with these permissions
+    ```sh
+    roles/compute.admin
+    roles/container.admin
+    roles/container.clusterAdmin
+    roles/iam.serviceAccountTokenCreator
+    roles/iam.serviceAccountUser
+    roles/storage.admin
+    ```
+  - Add IAM Policy bindings with Github repo, Identity provider and service account.
+    ```sh
+    gcloud iam service-accounts add-iam-policy-binding "${SERVICE_ACCOUNT_EMAIL}" \
+    --project="${GCP_PROJECT_ID}" \
+    --role="roles/iam.workloadIdentityUser" \
+    --member="principalSet://iam.googleapis.com/projects/${GCP_PROJECT_NUMBER}/locations/global/workloadIdentityPools/k8s-pool/attribute.repository/${GITHUB_REPO}"
+    ```
 
-hcl
-Copy
-variable "region" {}
-variable "project_id" {}
-variable "container_image" {}
-outputs.tf
-Define output values:
 
-hcl
-Copy
-output "cluster_name" {
-  value = google_container_cluster.default.name
-}
+- [x] Create a bucket in GCS for storing terraform state file.
+- [x] Get your GCP Project number for reference.
+  ```sh
+  gcloud projects describe ${PROJECT_ID}
+  ``` 
+- [x] Add secrets to Github Repo
+  - GCP_PROJECT_ID
+  - GCP_TF_STATE_BUCKET
+- [x] write GH Actions workflow for deploying our app to GKE using terraform
 
-output "cluster_endpoint" {
-  value = google_container_cluster.default.endpoint
-}
-
-output "cluster_location" {
-  value = google_container_cluster.default.location
-}
-
-output "load-balancer-ip" {
-  value = google_compute_address.default.address
-}
-4. Set Up GitHub OIDC Authentication with GCP
-Create a Workload Identity Pool
-bash
-Copy
-gcloud iam workload-identity-pools create "k8s-pool" \
-  --project="${PROJECT_ID}" \
-  --location="global" \
-  --display-name="k8s Pool"
-Create an OIDC Identity Provider
-bash
-Copy
-gcloud iam workload-identity-pools providers create-oidc "k8s-provider" \
-  --project="${PROJECT_ID}" \
-  --location="global" \
-  --workload-identity-pool="k8s-pool" \
-  --display-name="k8s provider" \
-  --attribute-mapping="google.subject=assertion.sub,attribute.actor=assertion.actor,attribute.aud=assertion.aud" \
-  --issuer-uri="https://token.actions.githubusercontent.com"
-Create a Service Account
-Create a service account with the required permissions:
-
-bash
-Copy
-gcloud iam service-accounts create tf-gke-test \
-  --display-name="Terraform GKE Test Service Account"
-Assign the necessary roles:
-
-bash
-Copy
-gcloud projects add-iam-policy-binding ${PROJECT_ID} \
-  --member="serviceAccount:tf-gke-test@${PROJECT_ID}.iam.gserviceaccount.com" \
-  --role="roles/container.admin"
-
-gcloud projects add-iam-policy-binding ${PROJECT_ID} \
-  --member="serviceAccount:tf-gke-test@${PROJECT_ID}.iam.gserviceaccount.com" \
-  --role="roles/storage.admin"
-Add IAM Policy Binding
-bash
-Copy
-gcloud iam service-accounts add-iam-policy-binding tf-gke-test@${PROJECT_ID}.iam.gserviceaccount.com \
-  --project="${PROJECT_ID}" \
-  --role="roles/iam.workloadIdentityUser" \
-  --member="principalSet://iam.googleapis.com/projects/${PROJECT_NUMBER}/locations/global/workloadIdentityPools/k8s-pool/attribute.repository/${GITHUB_REPO}"
-5. Create a GCS Bucket for Terraform State
-Create a Google Cloud Storage (GCS) bucket to store the Terraform state file:
-
-bash
-Copy
-gsutil mb gs://${TF_STATE_BUCKET_NAME}
-6. Add Secrets to GitHub Repository
-Add the following secrets to your GitHub repository:
-
-GCP_PROJECT_ID
-
-GCP_TF_STATE_BUCKET
-
-7. Write GitHub Actions Workflow
-Create a GitHub Actions workflow file (.github/workflows/deploy.yml):
-
-yaml
-Copy
-name: Deploy to Kubernetes
+```yml
+name: Deploy to kubernetes
 on:
   push:
     branches:
-      - "main"
+      - "Complete-CI/CD-with-Terraform-GKE"
 
 env:
   GCP_PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
@@ -338,26 +299,27 @@ jobs:
       id-token: 'write'
 
     steps:
-    - uses: actions/checkout@v3
-    - id: auth
-      name: Authenticate to Google Cloud
-      uses: google-github-actions/auth@v1
+    - uses: 'actions/checkout@v3'
+    - id: 'auth'
+      name: 'Authenticate to Google Cloud'
+      uses: 'google-github-actions/auth@v1'
       with:
         token_format: 'access_token'
-        workload_identity_provider: 'projects/${PROJECT_NUMBER}/locations/global/workloadIdentityPools/k8s-pool/providers/k8s-provider'
-        service_account: 'tf-gke-test@${GCP_PROJECT_ID}.iam.gserviceaccount.com'
-    - name: Set up Cloud SDK
-      uses: google-github-actions/setup-gcloud@v1
-    - name: Docker Auth
+        workload_identity_provider: 'projects/886257991781/locations/global/workloadIdentityPools/k8s-pool/providers/k8s-provider'
+        service_account: 'tf-gke-test@$GCP_PROJECT_ID.iam.gserviceaccount.com'
+    - name: 'Set up Cloud SDK'
+      uses: 'google-github-actions/setup-gcloud@v1'
+    - name: docker auth
       run: gcloud auth configure-docker
-    - name: Build and Push Docker Image
+    - run: gcloud auth list
+    - name: Build and push docker image
       run: |
         docker build -t us.gcr.io/$GCP_PROJECT_ID/nodeappimage:$IMAGE_TAG .
         docker push us.gcr.io/$GCP_PROJECT_ID/nodeappimage:$IMAGE_TAG
       working-directory: ./nodeapp
     - name: Setup Terraform
       uses: hashicorp/setup-terraform@v2
-    - name: Terraform Init
+    - name: Terraform init
       run: terraform init -backend-config="bucket=$TF_STATE_BUCKET_NAME" -backend-config="prefix=test"
       working-directory: ./terraform
     - name: Terraform Plan
@@ -371,14 +333,14 @@ jobs:
     - name: Terraform Apply
       run: terraform apply PLAN
       working-directory: ./terraform
+```
+
 8. Deploy the Application
 Push your code to the main branch, and the GitHub Actions workflow will automatically deploy your application to GKE.
 
 9. Clean Up Resources
 To clean up all resources, run the following command:
 
-bash
-Copy
 terraform destroy -var="region=us-central1" -var="project_id=$GCP_PROJECT_ID" -var="container_image=us.gcr.io/$GCP_PROJECT_ID/nodeappimage:$IMAGE_TAG"
 Screenshots
 Here are some screenshots of the deployment process:
