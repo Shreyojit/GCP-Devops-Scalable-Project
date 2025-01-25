@@ -63,24 +63,36 @@ This project demonstrates how to build a modern, scalable, and secure cloud-nati
 Deploying a Node.js Application to GKE Using Terraform and GitHub Actions
 This guide walks you through the process of deploying a simple Node.js application to Google Kubernetes Engine (GKE) using Terraform and GitHub Actions.
 
-Table of Contents
-Create a Simple Node.js/Express Application
+🚀 Table of Contents
+1. 🛠️ Create a Simple Node.js/Express Application
+Kickstart your journey by building a simple yet powerful Node.js application using Express!
 
-Write Dockerfile for the Application
+2. 🐳 Write Dockerfile for the Application
+Containerize your app like a pro with a sleek and efficient Dockerfile.
 
-Write Terraform Scripts for GKE Cluster, Deployment, and Service
+3. 🌐 Write Terraform Scripts for GKE Cluster, Deployment, and Service
+Unleash the power of Infrastructure as Code with Terraform to provision a GKE cluster, deploy your app, and set up services.
 
-Set Up GitHub OIDC Authentication with GCP
+4. 🔐 Set Up GitHub OIDC Authentication with GCP
+Secure your deployments with GitHub OIDC and GCP Workload Identity Federation—no more hardcoded credentials!
 
-Create a GCS Bucket for Terraform State
+5. 📦 Create a GCS Bucket for Terraform State
+Store your Terraform state securely in a Google Cloud Storage (GCS) bucket.
 
-Add Secrets to GitHub Repository
+6. 🔑 Add Secrets to GitHub Repository
+Keep your sensitive information safe by adding secrets like GCP_PROJECT_ID and GCP_TF_STATE_BUCKET to your GitHub repository.
 
-Write GitHub Actions Workflow
+7. 🤖 Write GitHub Actions Workflow
+Automate your deployments with a GitHub Actions CI/CD pipeline—build, test, and deploy with ease!
 
-Deploy the Application
+8. 🚀 Deploy the Application
+Push your code and watch the magic happen as your app gets deployed to GKE automatically.
 
-Clean Up Resources
+9. 🧹 Clean Up Resources
+Don’t forget to clean up! Use Terraform to destroy all resources and keep your GCP environment tidy.
+
+🌟 Get ready to build, deploy, and scale like never before! 🌟
+
 
 <p>
 <img src="https://raw.githubusercontent.com/tush-tr/tush-tr/master/res/docker.gif" height="36" width="36" >
@@ -344,6 +356,8 @@ To clean up all resources, run the following command:
 terraform destroy -var="region=us-central1" -var="project_id=$GCP_PROJECT_ID" -var="container_image=us.gcr.io/$GCP_PROJECT_ID/nodeappimage:$IMAGE_TAG"
 Screenshots
 Here are some screenshots of the deployment process:
+
+![Screenshot from 2025-01-26 00-49-45](https://github.com/user-attachments/assets/d9923330-b89d-4fe4-82c3-dfa58a79f2f0)
 
 
 
