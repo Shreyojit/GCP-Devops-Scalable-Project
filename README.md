@@ -1,66 +1,67 @@
 🚀 Deploying Kubernetes on GCP with Terraform & GitHub CI/CD 🌐
 ✨ Infrastructure as Code, Automated Deployments, and Scalable Cloud Solutions! ✨
 
-🔧 What We Built:
+🔧 What We Built
+A fully automated pipeline to deploy a Kubernetes cluster on Google Cloud Platform (GCP) using Terraform and GitHub Actions.
 
-    A fully automated pipeline to deploy a Kubernetes cluster on Google Cloud Platform (GCP) using Terraform and GitHub Actions.
+🛠️ Infrastructure as Code: Terraform scripts to provision GKE clusters, compute resources, and load balancers.
 
-    🛠️ Infrastructure as Code: Terraform scripts to provision GKE clusters, compute resources, and load balancers.
+🤖 CI/CD Automation: GitHub Actions for seamless, secure, and repeatable deployments.
 
-    🤖 CI/CD Automation: GitHub Actions for seamless, secure, and repeatable deployments.
+🚦 Scalable & Secure: Kubernetes deployments with static IPs, workload identity federation, and role-based access control.
 
-    🚦 Scalable & Secure: Kubernetes deployments with static IPs, workload identity federation, and role-based access control.
+🌟 Key Features
+☁️ GCP Integration: Leveraged GKE, Compute Engine, and Cloud Storage for a robust cloud infrastructure.
 
-🌟 Key Features:
+🔐 Secure Authentication: GitHub OIDC with GCP Workload Identity Federation for secure, tokenless access.
 
-    ☁️ GCP Integration: Leveraged GKE, Compute Engine, and Cloud Storage for a robust cloud infrastructure.
+⚙️ Terraform Magic: Infrastructure defined as code for consistency and reproducibility.
 
-    🔐 Secure Authentication: GitHub OIDC with GCP Workload Identity Federation for secure, tokenless access.
+🚀 CI/CD Pipeline: Automated testing, planning, and deployment with GitHub Actions.
 
-    ⚙️ Terraform Magic: Infrastructure defined as code for consistency and reproducibility.
+📦 Kubernetes Deployment: Containerized applications managed effortlessly with GKE.
 
-    🚀 CI/CD Pipeline: Automated testing, planning, and deployment with GitHub Actions.
+💡 Why It’s Awesome
+🛡️ Security First: OIDC authentication ensures no long-lived credentials are stored.
 
-    📦 Kubernetes Deployment: Containerized applications managed effortlessly with GKE.
+⏩ Speed & Efficiency: Automated pipelines reduce manual errors and deployment time.
 
-💡 Why It’s Awesome:
+🌍 Scalability: Kubernetes and GKE enable horizontal scaling for high-traffic applications.
 
-    🛡️ Security First: OIDC authentication ensures no long-lived credentials are stored.
+🔄 Reproducibility: Terraform ensures the same infrastructure can be deployed across environments.
 
-    ⏩ Speed & Efficiency: Automated pipelines reduce manual errors and deployment time.
+🔗 Tech Stack
+Cloud: GCP (GKE, Compute Engine, Cloud Storage)
 
-    🌍 Scalability: Kubernetes and GKE enable horizontal scaling for high-traffic applications.
+IaC: Terraform
 
-    🔄 Reproducibility: Terraform ensures the same infrastructure can be deployed across environments.
+CI/CD: GitHub Actions
 
-🔗 Tech Stack:
+Orchestration: Kubernetes
 
-    Cloud: GCP (GKE, Compute Engine, Cloud Storage)
+Authentication: GitHub OIDC + GCP Workload Identity Federation
 
-    IaC: Terraform
+🌈 The Future
+📊 Monitoring: Integrate Prometheus and Grafana for real-time insights.
 
-    CI/CD: GitHub Actions
+🔄 Multi-Environment Support: Staging, production, and rollback strategies.
 
-    Orchestration: Kubernetes
+🛠️ Advanced Networking: Implement ingress controllers and network policies.
 
-    Authentication: GitHub OIDC + GCP Workload Identity Federation
-
-🌈 The Future:
-
-    📊 Monitoring: Integrate Prometheus and Grafana for real-time insights.
-
-    🔄 Multi-Environment Support: Staging, production, and rollback strategies.
-
-    🛠️ Advanced Networking: Implement ingress controllers and network policies.
-
-🎯 Impact:
+🎯 Impact
 This project demonstrates how to build a modern, scalable, and secure cloud-native infrastructure using cutting-edge tools and best practices. Perfect for DevOps engineers, cloud enthusiasts, and anyone passionate about automation! 🚀
 
 
+![Screenshot 2025-01-26 015534](https://github.com/user-attachments/assets/5692108c-7a0b-481f-a402-681eeb8e8d2a)
 
+
+![Screenshot 2025-01-26 015552](https://github.com/user-attachments/assets/b45f191a-d409-46bf-ae99-a34043e604b8)
+
+
+![Screenshot 2025-01-26 015607](https://github.com/user-attachments/assets/72898849-25a0-4825-b16e-452708a9b109)
 
 Deploying a Node.js Application to GKE Using Terraform and GitHub Actions
-This guide walks you through the process of deploying a simple Node.js application to Google Kubernetes Engine (GKE) using Terraform and GitHub Actions. The steps include creating a Node.js application, writing a Dockerfile, setting up Terraform scripts for GKE, configuring GitHub OIDC authentication, and automating the deployment using GitHub Actions.
+This guide walks you through the process of deploying a simple Node.js application to Google Kubernetes Engine (GKE) using Terraform and GitHub Actions.
 
 Table of Contents
 Create a Simple Node.js/Express Application
@@ -380,13 +381,10 @@ bash
 Copy
 terraform destroy -var="region=us-central1" -var="project_id=$GCP_PROJECT_ID" -var="container_image=us.gcr.io/$GCP_PROJECT_ID/nodeappimage:$IMAGE_TAG"
 Screenshots
+Here are some screenshots of the deployment process:
 
-    
 
-![Screenshot from 2025-01-26 00-53-39](https://github.com/user-attachments/assets/1cf299b1-2028-4da8-91c2-8aa2a18b3a2a)
-![Screenshot from 2025-01-26 01-32-29](https://github.com/user-attachments/assets/66051e3a-f59d-4101-bcd0-a2e8fa04f0ca)
-![Screenshot from 2025-01-26 01-28-42](https://github.com/user-attachments/assets/c0d63c96-d8da-4e0e-b8c4-14646dc574ba)
-![Screenshot from 2025-01-26 00-49-45](https://github.com/use
-![Screenshot 2025-01-26 011741](https://github.com/user-attachments/assets/20371664-5c1d-47f0-8466-ba41e5137eee)
-r-attachments/assets/1a59efb1-e22e-49da-bd4b-34d64a7f41cc)
 
+![Screenshot from 2025-01-26 01-32-29](https://github.com/user-attachments/assets/d4117ce7-71c3-4269-b3e1-dbf558551889)
+![Screenshot from 2025-01-26 01-28-42](https://github.com/user-attachments/assets/94d58989-914d-4741-8c4d-ad98704b58b0)
+![Screenshot from 2025-01-26 00-53-39](https://github.com/user-attachments/assets/46e67864-5859-46ac-8569-a0605e17e4ae)
