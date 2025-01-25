@@ -49,7 +49,7 @@ jobs:
       - name: Terraform Plan
         run: |
           terraform plan \
-          -var="region=us-central1" \
+          -var="region=asia-south1" \
           -var="project_id=$GCP_PROJECT_ID" \
           -var="container_image=us.gcr.io/$GCP_PROJECT_ID/nodeappimage:$IMAGE_TAG" \
           -out=PLAN
