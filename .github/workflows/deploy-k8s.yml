@@ -2,7 +2,7 @@ name: Deploy to Kubernetes
 on:
   push:
     branches:
-      - "Complete-CI/CD-with-Terraform-GKE"
+      - main  # Trigger on pushes to the main branch
 
 env:
   GCP_PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
